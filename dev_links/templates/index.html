@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A curated bookmarking tool for your favorite coding resources.">
+    <title>Dev-Links | Resource Manager</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Phosphor Icons (for premium look UI) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header / Hero Section -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="ph-fill ph-code"></i>
+                <h1>Dev-Links</h1>
+            </div>
+            <p class="subtitle">Your curated bookmarking tool for coding resources.</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Controls: Search, Filter, and Add Button -->
+            <section class="controls-section glass-panel">
+                <div class="search-filter-group">
+                    <div class="input-wrap search-wrap">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search by title...">
+                    </div>
+                    <div class="input-wrap filter-wrap">
+                        <i class="ph ph-funnel"></i>
+                        <select id="tagFilter">
+                            <option value="">All Tags</option>
+                            <option value="HTML">HTML</option>
+                            <option value="CSS">CSS</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="Python">Python</option>
+                            <option value="Database">Database</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="openAddModalBtn" class="btn btn-primary">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Add Resource</span>
+                </button>
+            </section>
+
+            <!-- Links Grid -->
+            <section class="links-section">
+                <div id="loading" class="loading-state">
+                    <i class="ph ph-spinner ph-spin"></i>
+                    <p>Loading your resources...</p>
+                </div>
+                <div id="linksContainer" class="links-grid" style="display: none;">
+                    <!-- Cards will be injected here via JS -->
+                </div>
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="ph ph-empty"></i>
+                    <p>No resources found.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="resourceModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-panel">
+            <header class="modal-header">
+                <h2 id="modalTitle">Add New Resource</h2>
+                <button id="closeModalBtn" class="icon-btn"><i class="ph ph-x"></i></button>
+            </header>
+            <form id="resourceForm">
+                <input type="hidden" id="resourceId">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" required placeholder="e.g. MDN Web Docs">
+                </div>
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <input type="url" id="url" required placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="tag">Category Tag</label>
+                    <!-- Make input datalist for tags or just text? Text provides flexibility -->
+                    <input type="text" id="tag" required placeholder="e.g. JavaScript, Python" list="tagOptions">
+                    <datalist id="tagOptions">
+                        <option value="HTML">
+                        <option value="CSS">
+                        <option value="JavaScript">
+                        <option value="Python">
+                        <option value="Database">
+                        <option value="Other">
+                    </datalist>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelBtn" class="btn btn-ghost">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Resource</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
