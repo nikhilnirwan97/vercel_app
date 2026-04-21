@@ -32,20 +32,25 @@ def index():
 @app.route('/api/links', methods=['GET'])
 def get_links():
     """Get all links, optionally filtered by search term or tag."""
-    search_term = request.args.get('search', '').lower()
-    tag_filter = request.args.get('tag', '')
-    
-    query = Link.query
-    
-    if tag_filter:
-        query = query.filter(Link.tag == tag_filter)
+    try:
+        search_term = request.args.get('search', '').lower()
+        tag_filter = request.args.get('tag', '')
         
-    links = query.all()
-    
-    if search_term:
-        links = [link for link in links if search_term in link.title.lower()]
+        query = Link.query
         
-    return jsonify([link.to_dict() for link in links])
+        if tag_filter:
+            query = query.filter(Link.tag == tag_filter)
+            
+        links = query.all()
+        
+        if search_term:
+            links = [link for link in links if search_term in link.title.lower()]
+            
+        return jsonify([link.to_dict() for link in links])
+    except Exception as e:
+        # Debugging: return the exact error and if the environment variable is loaded
+        env_exists = bool(os.environ.get("POSTGRES_URL_NON_POOLING"))
+        return jsonify({'error': str(e), 'env_loaded': env_exists}), 500
 
 @app.route('/api/links', methods=['POST'])
 def create_link():
