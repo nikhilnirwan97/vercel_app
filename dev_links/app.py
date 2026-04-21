@@ -23,15 +23,15 @@ if db_url:
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///' + os.path.join(basedir, 'links.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize the app with the database
-db.init_app(app)
-
-# Create database tables if they don't exist
-with app.app_context():
-    try:
+# Initialize the app with the database safely
+try:
+    db.init_app(app)
+    with app.app_context():
         db.create_all()
-    except Exception as e:
-        print(f"Database connection error: {e}")
+except Exception as e:
+    print(f"Database Initialization Error: {e}")
+    # Don't crash the app, let the user see the exact error via the /api/links route
+    app.config['INIT_ERROR'] = str(e)
 
 @app.route('/')
 def index():
@@ -41,6 +41,10 @@ def index():
 @app.route('/api/links', methods=['GET'])
 def get_links():
     """Get all links, optionally filtered by search term or tag."""
+    # Check if there was a fatal startup error and return it instantly
+    if app.config.get('INIT_ERROR'):
+        return jsonify({'error': app.config['INIT_ERROR']}), 500
+        
     try:
         search_term = request.args.get('search', '').lower()
         tag_filter = request.args.get('tag', '')
