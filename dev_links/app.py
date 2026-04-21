@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Configure database: Use DATABASE_URL from env if available (Vercel), else fallback to local SQLite
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_PRISMA_URL") or os.environ.get("POSTGRES_URL_NON_POOLING")
+db_url = os.environ.get("POSTGRES_PRISMA_URL") or os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL_NON_POOLING")
 
 if db_url:
     # Remove Prisma-specific query params but KEEP sslmode=require
