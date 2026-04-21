@@ -19,7 +19,10 @@ db.init_app(app)
 
 # Create database tables if they don't exist
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"Database connection error: {e}")
 
 @app.route('/')
 def index():
