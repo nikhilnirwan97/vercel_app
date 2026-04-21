@@ -17,6 +17,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize the app with the database
 db.init_app(app)
 
+# Create database tables if they don't exist
+with app.app_context():
+    db.create_all()
+
 @app.route('/')
 def index():
     """Serve the main HTML interface."""
