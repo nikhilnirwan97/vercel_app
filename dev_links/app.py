@@ -9,9 +9,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_PRISMA_URL") or os.environ.get("POSTGRES_URL_NON_POOLING")
 
 if db_url:
-    # Remove Prisma-specific query params that crash psycopg2
+    # Remove Prisma-specific query params but KEEP sslmode=require
     if "?" in db_url:
         db_url = db_url.split("?")[0]
+        
+    # Supabase absolutely requires SSL for external connections
+    if "sslmode=require" not in db_url:
+        db_url += "?sslmode=require"
         
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
