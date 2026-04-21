@@ -6,10 +6,15 @@ app = Flask(__name__)
 
 # Configure database: Use DATABASE_URL from env if available (Vercel), else fallback to local SQLite
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL_NON_POOLING")
+db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_PRISMA_URL") or os.environ.get("POSTGRES_URL_NON_POOLING")
 
-if db_url and db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+if db_url:
+    # Remove Prisma-specific query params that crash psycopg2
+    if "?" in db_url:
+        db_url = db_url.split("?")[0]
+        
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///' + os.path.join(basedir, 'links.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
