@@ -37,13 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tag) params.append('tag', tag);
             
             const response = await fetch(`/api/links?${params.toString()}`);
-            if (!response.ok) throw new Error('Failed to fetch resources');
+            if (!response.ok) {
+                try {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Failed to fetch resources');
+                } catch(e) {
+                    throw new Error(e.message || 'Failed to fetch resources');
+                }
+            }
             
             const data = await response.json();
             renderLinks(data);
         } catch (error) {
             console.error('Error fetching links:', error);
-            linksContainer.innerHTML = '<div style="color:var(--danger); grid-column:1/-1; text-align:center;">Failed to load resources. Is the backend running?</div>';
+            linksContainer.innerHTML = `<div style="color:var(--danger); grid-column:1/-1; text-align:center; padding: 2rem; background: rgba(255,0,0,0.1); border-radius: 8px;"><strong>Database Error:</strong><br><br>${error.message}</div>`;
             linksContainer.style.display = 'grid';
             loadingState.style.display = 'none';
             emptyState.style.display = 'none';
